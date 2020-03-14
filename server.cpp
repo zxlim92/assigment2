@@ -38,17 +38,17 @@ voidreadGraph(string filename, WDigraph& graph, unordered_map<int, Point>& point
 						start = start + line[counter];
 						counter++;
 					}       	
-					int startNum = stoi(start);	//convert string to int
+					long long startNum = stoi(start);	//convert string to int
 					counter = counter +1;
 					string endNum;
 					while(line[counter] != ','){
 						endNum = endNum + line[counter];
 						counter++;
 					} 
-					int EndNum = stoi(endNum);
+					long long EndNum = stoi(endNum);
 					graph->addEdge(startNum, EndNum);
 					graph->addEdge(EndNum, startNum);
-        		}else{
+        		}else if(line[0] == 'V'){
         			int counter =2;
 					string vertex;
 					while(line[counter] != ','){
@@ -68,11 +68,22 @@ voidreadGraph(string filename, WDigraph& graph, unordered_map<int, Point>& point
 
 
 
-}
-int main(){
+int main(int argc, char* argv[]){
 	graph WDigraph;
-	char[] filename = "edmonton-roads-2.0.1.txt";
-	voidreadGraph(filename, graph, )
+	char map[] = "edmonton-roads-2.0.1.txt";
+	unordered_map<int,Point> points;
+	voidreadGraph(map, graph,points);
+	char input;
+	long long startLatit, startLong, endLatit, endLong;
+
+	while(1){
+		if(input == 'R'){
+			cin >> startLatit >> startLong >> endLatit >> endLong;
+			Point start {startLatit,startLong};
+			Point end {endLatit,endLong};
+			
+		}
+	}
 
 
 
