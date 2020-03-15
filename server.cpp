@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <list>
 #include "digraph.h"
+#include "wdigraph.h"
 #include <fstream>
 #include <string.h>
 #include <iostream>
@@ -16,7 +17,7 @@ long long manhattan(const Point& pt1, const Point& pt2){
 	//return Manhattan distance between the 2 given points;
 	long long distance = abs(pt1.lon -pt2.lon) + abs(pt1.lat-pt2.lat);
 }
-voidreadGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
+void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
 	/*Read the Edmonton map data from the provided file
 	and load it into the given WDigraph object.
 	Store vertex coordinates in Point struct and map
@@ -26,42 +27,58 @@ voidreadGraph(string filename, WDigraph& graph, unordered_map<int, Point>& point
 	graph: an instance of the weighted directed graph (WDigraph) class
 	points: a mapping between vertex identifiers and their coordinates
 	*/
-	ifstream mapOfEdmonton(filename);
-    string inputMap;
-    string line;
-        if(mapOfEdmonton.is_open()){
-        	while(getline(mapOfEdmonton, line)){
-        		if(line[0] == 'E'){
-        			int counter =2;
-					string start;
-					while(line[counter] != ','){
-						start = start + line[counter];
-						counter++;
-					}       	
-					long long startNum = stoi(start);	//convert string to int
-					counter = counter +1;
-					string endNum;
-					while(line[counter] != ','){
-						endNum = endNum + line[counter];
-						counter++;
-					} 
-					long long EndNum = stoi(endNum);
-					graph->addEdge(startNum, EndNum);
-					graph->addEdge(EndNum, startNum);
-        		}else if(line[0] == 'V'){
-        			int counter =2;
-					string vertex;
-					while(line[counter] != ','){
-						vertex = vertex + line[counter];
-						counter++;
-					}       	 
-					int intVertex = stoi(vertex);//convert string to int
-					graph -> addVertex(intVertex);
-        		}
-        	}
+  ifstream file(filename);
+  string line;
+  Point point; 
+  if(file.is_open()) {
+    while(!file.eof()) {
+      getline(file, line);
+      if(line.substr(0, 1) == "V") {
+        int i = 1;
+        while(line.substr(i + 1, 1) != ",") {
+          i++;
         }
-        mapOfEdmonton.close();
-        return graph;
+
+        string temp = line.substr(2, i - 1);
+        int id = stoi(temp);
+        int j =1;
+        while(line.substr(i + j + 2, 1) != ",") {
+          j++;
+        }
+        temp = line.substr(i + 2, j);
+
+        long long p1 = static_cast <long long> (stold(temp)*100000);
+        int x =1;
+		while(line.substr(x + j+i + 2, 1) != "") {
+          x++;
+        }
+
+        string temp2 = line.substr(j+i+3, x);
+        long long p2 = static_cast <long long> (stold(temp)*100000);
+        
+      }
+      else if(line.substr(0, 1) == "E") {
+        int i = 1;
+        while(line.substr(i + 1, 1) != ",") {
+          i++;
+        }
+        string temp = line.substr(2, i - 1);
+        int start = stoi(temp);
+        int j = 1;
+        while(line.substr(i + j + 2, 1) != ",") {
+          j++;
+        }
+        temp = line.substr(i + 2, j);
+        int end = stoi(temp);
+        long long fire = manhattan(points[start], points[end]);
+        graph.addEdge(start, end,fire);
+      }
+      else {
+        break;
+      }
+    }
+    file.close();
+  }
 }
 	
 
@@ -69,10 +86,10 @@ voidreadGraph(string filename, WDigraph& graph, unordered_map<int, Point>& point
 
 
 int main(int argc, char* argv[]){
-	graph WDigraph;
+	WDigraph graph;
 	char map[] = "edmonton-roads-2.0.1.txt";
 	unordered_map<int,Point> points;
-	voidreadGraph(map, graph,points);
+	readGraph(map, graph,points);
 	char input;
 	long long startLatit, startLong, endLatit, endLong;
 
