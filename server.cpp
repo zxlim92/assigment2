@@ -5,9 +5,11 @@
 #include <list>
 #include "digraph.h"
 #include "wdigraph.h"
+#include "dijkstra.h"
 #include <fstream>
 #include <string.h>
 #include <iostream>
+#include <stack>
 struct Point
 {
 	long long lat;
@@ -16,8 +18,7 @@ struct Point
 long long manhattan(const Point& pt1, const Point& pt2){
 	//return Manhattan distance between the 2 given points;
 	long long distance = abs(pt1.lon - pt2.lon) + abs(pt1.lat-pt2.lat);
-  // cout<<pt1.lon<<endl;
-  // cout<<pt2.lon<<endl;
+
   return distance;
 }
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
@@ -30,58 +31,91 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 	graph: an instance of the weighted directed graph (WDigraph) class
 	points: a mapping between vertex identifiers and their coordinates
 	*/
-  ifstream file(filename);
-  string line;
-  Point point; 
-  if(file.is_open()) {
-    while(!file.eof()) {
-      getline(file, line);
-      if(line.substr(0, 1) == "V") {
-        int i = 1;
-        while(line.substr(i + 1, 1) != ",") {
-          i++;
-        }
 
-        string temp = line.substr(2, i - 1);
-        int id = stoi(temp);
-        int j =1;
-        while(line.substr(i + j + 2, 1) != ",") {
-          j++;
-        }
-        temp = line.substr(i + 2, j);
+  char graphID, comma;
+    int ID, start, end;
+  double lat, lon;
+  string name;
+    Point point;
 
-        long long p1 = static_cast <long long> (stold(temp)*100000);
-        int x =1;
-		while(line.substr(x + j+i + 2, 1) != "") {
-          x++;
-        }
+  // input validation
+  ifstream textIn(filename);
 
-        string temp2 = line.substr(j+i+3, x);
-        long long p2 = static_cast <long long> (stold(temp)*100000);
-        
-      }
-      else if(line.substr(0, 1) == "E") {
-        int i = 1;
-        while(line.substr(i + 1, 1) != ",") {
-          i++;
+  while (textIn >> graphID >> comma) {
+        if (graphID == 'V') {
+            // vertex format: V,ID,Lat,Lon
+            textIn >> ID >> comma >> lat >> comma >> lon;
+            long long convertedLon = static_cast<long long>(lon * 100000);
+            long long convertedLat = static_cast<long long>(lat * 100000);
+
+            point = {convertedLat, convertedLon};
+            points[ID] = point;
+            graph.addVertex(ID);
+        } else if (graphID == 'E') {
+            // edge format: E,start,end,name
+            textIn >> start >> comma >> end >> comma;
+            getline(textIn, name);
+
+            // find points and get manhattan distance
+            long long distance = manhattan(points[start], points[end]);
+            graph.addEdge(start, end, distance);
         }
-        string temp = line.substr(2, i - 1);
-        int start = stoi(temp);
-        int j = 1;
-        while(line.substr(i + j + 2, 1) != ",") {
-          j++;
-        }
-        temp = line.substr(i + 2, j);
-        int end = stoi(temp);
-        long long fire = manhattan(points[start], points[end]);
-        graph.addEdge(start, end,fire);
-      }
-      else {
-        break;
-      }
     }
-    file.close();
-  }
+    textIn.close();
+  // ifstream file(filename);
+  // string line;
+  // Point point; 
+  // if(file.is_open()) {
+  //   while(!file.eof()) {
+  //     getline(file, line);
+  //     if(line.substr(0, 1) == "V") {
+  //       int i = 1;
+  //       while(line.substr(i + 1, 1) != ",") {
+  //         i++;
+  //       }
+
+  //       string temp = line.substr(2, i - 1);
+  //       int id = stoi(temp);
+  //       int j =1;
+  //       while(line.substr(i + j + 2, 1) != ",") {
+  //         j++;
+  //       }
+  //       temp = line.substr(i + 2, j);
+
+  //       long long p1 = static_cast <long long> (stold(temp)*100000);
+  //       int x =1;
+		//     while(line.substr(x + j+i + 2, 1) != "") {
+  //         x++;
+  //       }
+
+  //       string temp2 = line.substr(j+i+3, x);
+  //       long long p2 = static_cast <long long> (stold(temp)*100000);
+  //       point = {p1,p2};
+  //       points[id] = point;
+  //       graph.addVertex(id);
+  //     }
+  //     else if(line.substr(0, 1) == "E") {
+  //       int i = 1;
+  //       while(line.substr(i + 1, 1) != ",") {
+  //         i++;
+  //       }
+  //       string temp = line.substr(2, i - 1);
+  //       int start = stoi(temp);
+  //       int j = 1;
+  //       while(line.substr(i + j + 2, 1) != ",") {
+  //         j++;
+  //       }
+  //       temp = line.substr(i + 2, j);
+  //       int end = stoi(temp);
+  //       long long fire = manhattan(points[start], points[end]);
+  //       graph.addEdge(start, end,fire);
+  //     }
+  //     else {
+  //       break;
+  //     }
+  //   }
+  //   file.close();
+  // }
 }
 	
 
@@ -90,16 +124,26 @@ int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<
   long long closePoint;
   int fillClosePoint =1; // populate closePoint and closePointId for first run so tat there can be comparsion w rest of points
   int closePointId;
+  int counter =0;
+
   for (auto point : points){
+    
+
+    // if(distance < closePoint){
+    //   cout<<"bitc ";
+    counter ++;
+    
+  // }
     long long distance = manhattan(point.second , convertPoint);
     if(fillClosePoint ==1){
       closePoint = distance;
       closePointId = point.first;
       fillClosePoint = 0;
     }
-    else if(closePoint > distance){
+    if(closePoint > distance){
       closePoint = distance;
       closePointId = point.first;
+
 
     }
 
@@ -113,6 +157,7 @@ int main(int argc, char* argv[]){
 	unordered_map<int,Point> points;
 	readGraph(map, graph,points);
 	long long startLatit, startLong, endLatit, endLong;
+  stack<int> path;
   ifstream inputFile;
   ofstream outputFile;
   inputFile.open(argv[1]);
@@ -121,19 +166,44 @@ int main(int argc, char* argv[]){
   while(inputFile >> x) {
     if(x == "R") {
       inputFile >> startLatit >> startLong >> endLatit >> endLong;
-      cout << startLatit << startLong << endLatit << endLong;
+
       int start = convertToMapPoint(startLatit,startLong,points);
       int end = convertToMapPoint(endLatit,endLong,points);
+      unordered_map<int, PIL> searchTree;
+      dijkstra(graph,start,searchTree);
       outputFile << "N ";
       //TODO
-    }
-    else if(x == "A") {
+      if(searchTree.find(end) == searchTree.end()){
+        outputFile<<" 0"<<endl; // if there is no path
+      }
+      else{
       //TODO
-    }
-    break;
+        int node = end;
+        while(node != start){
+          path.push(node);
+          node = searchTree[node].second;
+        }
+        path.push(start);
+        int pathSize = path.size();
+        outputFile << pathSize<<endl;
+        if(path.size()>1){
+          for(int i=0;i<pathSize;i++){
+            inputFile >>x;     
+            if(x=="A"){
+             Point output = points[path.top()];
+             outputFile << "W "<< output.lat << " " << output.lon << endl;
+             cout << "W "<< output.lat << " " << output.lon << endl;
+              path.pop();
+           }
+         }
+         inputFile >>x;
+         outputFile<<"E"<<endl;
   }
   inputFile.close();
   outputFile.close();
 
 
+}
+}
+}
 }
