@@ -106,6 +106,8 @@ int main(int argc, char* argv[]){
       //TODO
     }
   }
+  inputFile.close();
+  outputFile.close();
 
 
 }
