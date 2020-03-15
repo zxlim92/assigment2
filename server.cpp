@@ -89,21 +89,23 @@ int main(int argc, char* argv[]){
 	char map[] = "edmonton-roads-2.0.1.txt";
 	unordered_map<int,Point> points;
 	readGraph(map, graph,points);
-	char input;
 	long long startLatit, startLong, endLatit, endLong;
-  cin>>input;
-  cout<<"hello"<<endl;
-  cout<<input<<endl;
-	while(1){
-		if(input == 'R'){
-			cin >> startLatit >> startLong >> endLatit >> endLong;
-			Point start {startLatit,startLong};
-			Point end {endLatit,endLong};
-			
-		}
-	}
-
-
+  ifstream inputFile;
+  ofstream outputFile;
+  inputFile.open(argv[1]);
+  outputFile.open("mysoln.txt");
+  char x;
+  while(inputFile >> x) {
+    if(x == 'R') {
+      inputFile >> startLatit >> startLong >> endLatit >> endLong;
+      inputFile.ignore(256. '\n');
+      outputFile << "N ";
+      //TODO
+    }
+    else if(x == 'A') {
+      //TODO
+    }
+  }
 
 
 }
