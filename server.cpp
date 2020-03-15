@@ -82,7 +82,28 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 }
 	
 
+int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<int, Point>& points ){
+  Point convertPoint = {lattitude, longnitude};
+  long long closePoint;
+  int fillClosePoint =1; // populate closePoint and closePointId for first run so tat there can be comparsion w rest of points
+  int closePointId;
+  cout<<"hellllooo"<<endl;
+  for (auto point : points){
+    long long distance = manhattan(point.second , convertPoint);
+    if(fillClosePoint ==1){
+      closePoint = distance;
+      closePointId = point.first;
+      fillClosePoint = 0;
+    }
+    else if(closePoint > distance){
+      closePoint = distance;
+      closePointId = point.first;
 
+    }
+      cout<<distance<<endl;
+  }
+  return closePointId;
+}
 
 int main(int argc, char* argv[]){
 	WDigraph graph;
@@ -95,10 +116,15 @@ int main(int argc, char* argv[]){
   inputFile.open(argv[1]);
   outputFile.open("mysoln.txt");
   char x;
+  inputFile >> x >> x;
+  cout<<x<<endl;
   while(inputFile >> x) {
     if(x == 'R') {
+      cout<<"hello"<<endl;
       inputFile >> startLatit >> startLong >> endLatit >> endLong;
-      inputFile.ignore(256. '\n');
+      inputFile.ignore(256, '\n');
+      int start = convertToMapPoint(startLatit,startLong,points);
+      int end = convertToMapPoint(endLatit,endLong,points);
       outputFile << "N ";
       //TODO
     }
