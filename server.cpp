@@ -84,7 +84,6 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
 
 
-
 int main(int argc, char* argv[]){
 	WDigraph graph;
 	char map[] = "edmonton-roads-2.0.1.txt";
@@ -92,7 +91,9 @@ int main(int argc, char* argv[]){
 	readGraph(map, graph,points);
 	char input;
 	long long startLatit, startLong, endLatit, endLong;
-
+  cin>>input;
+  cout<<"hello"<<endl;
+  cout<<input<<endl;
 	while(1){
 		if(input == 'R'){
 			cin >> startLatit >> startLong >> endLatit >> endLong;
