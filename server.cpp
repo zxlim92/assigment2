@@ -15,9 +15,9 @@ struct Point
 };
 long long manhattan(const Point& pt1, const Point& pt2){
 	//return Manhattan distance between the 2 given points;
-	long long distance = abs(pt1.lon -pt2.lon) + abs(pt1.lat-pt2.lat);
-  cout<<pt1.lon<<endl;
-  cout<<pt2.lon<<endl;
+	long long distance = abs(pt1.lon - pt2.lon) + abs(pt1.lat-pt2.lat);
+  // cout<<pt1.lon<<endl;
+  // cout<<pt2.lon<<endl;
   return distance;
 }
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
@@ -115,21 +115,19 @@ int main(int argc, char* argv[]){
 	long long startLatit, startLong, endLatit, endLong;
   ifstream inputFile;
   ofstream outputFile;
-  inputFile.open(argv[1]);
-  outputFile.open("mysoln.txt");
-  char x;
+  inputFile.open(argv[2]);
+  outputFile.open(argv[4]);
+  string x;
   while(inputFile >> x) {
-    if(x == 'R') {
-      cout<<"hello"<<endl;
+    if(x == "R") {
       inputFile >> startLatit >> startLong >> endLatit >> endLong;
-      inputFile.ignore(256, '\n');
+      cout << startLatit << startLong << endLatit << endLong;
       int start = convertToMapPoint(startLatit,startLong,points);
       int end = convertToMapPoint(endLatit,endLong,points);
-
       outputFile << "N ";
       //TODO
     }
-    else if(x == 'A') {
+    else if(x == "A") {
       //TODO
     }
     break;
