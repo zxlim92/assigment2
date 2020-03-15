@@ -16,6 +16,9 @@ struct Point
 long long manhattan(const Point& pt1, const Point& pt2){
 	//return Manhattan distance between the 2 given points;
 	long long distance = abs(pt1.lon -pt2.lon) + abs(pt1.lat-pt2.lat);
+  cout<<pt1.lon<<endl;
+  cout<<pt2.lon<<endl;
+  return distance;
 }
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
 	/*Read the Edmonton map data from the provided file
@@ -87,7 +90,6 @@ int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<
   long long closePoint;
   int fillClosePoint =1; // populate closePoint and closePointId for first run so tat there can be comparsion w rest of points
   int closePointId;
-  cout<<"hellllooo"<<endl;
   for (auto point : points){
     long long distance = manhattan(point.second , convertPoint);
     if(fillClosePoint ==1){
@@ -100,7 +102,7 @@ int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<
       closePointId = point.first;
 
     }
-      cout<<distance<<endl;
+
   }
   return closePointId;
 }
@@ -116,8 +118,6 @@ int main(int argc, char* argv[]){
   inputFile.open(argv[1]);
   outputFile.open("mysoln.txt");
   char x;
-  inputFile >> x >> x;
-  cout<<x<<endl;
   while(inputFile >> x) {
     if(x == 'R') {
       cout<<"hello"<<endl;
@@ -125,12 +125,14 @@ int main(int argc, char* argv[]){
       inputFile.ignore(256, '\n');
       int start = convertToMapPoint(startLatit,startLong,points);
       int end = convertToMapPoint(endLatit,endLong,points);
+
       outputFile << "N ";
       //TODO
     }
     else if(x == 'A') {
       //TODO
     }
+    break;
   }
   inputFile.close();
   outputFile.close();
