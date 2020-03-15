@@ -115,8 +115,8 @@ int main(int argc, char* argv[]){
 	long long startLatit, startLong, endLatit, endLong;
   ifstream inputFile;
   ofstream outputFile;
-  inputFile.open(argv[2]);
-  outputFile.open(argv[4]);
+  inputFile.open(argv[1]);
+  outputFile.open("mysol.txt");
   string x;
   while(inputFile >> x) {
     if(x == "R") {
