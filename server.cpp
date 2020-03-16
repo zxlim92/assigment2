@@ -8,7 +8,6 @@
 #include "dijkstra.h"
 #include <fstream>
 #include <string.h>
-#include <iostream>
 #include <stack>
 struct Point
 {
@@ -31,91 +30,54 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 	graph: an instance of the weighted directed graph (WDigraph) class
 	points: a mapping between vertex identifiers and their coordinates
 	*/
-
-  char graphID, comma;
-    int ID, start, end;
-  double lat, lon;
-  string name;
-    Point point;
-
-  // input validation
-  ifstream textIn(filename);
-
-  while (textIn >> graphID >> comma) {
-        if (graphID == 'V') {
-            // vertex format: V,ID,Lat,Lon
-            textIn >> ID >> comma >> lat >> comma >> lon;
-            long long convertedLon = static_cast<long long>(lon * 100000);
-            long long convertedLat = static_cast<long long>(lat * 100000);
-
-            point = {convertedLat, convertedLon};
-            points[ID] = point;
-            graph.addVertex(ID);
-        } else if (graphID == 'E') {
-            // edge format: E,start,end,name
-            textIn >> start >> comma >> end >> comma;
-            getline(textIn, name);
-
-            // find points and get manhattan distance
-            long long distance = manhattan(points[start], points[end]);
-            graph.addEdge(start, end, distance);
+  ifstream file(filename);
+  string line;
+  Point point; 
+  if(file.is_open()) {
+    while(file.good()) {
+      getline(file, line);
+      if(line.substr(0, 1) == "V") {
+        int i = 0;
+        while(line.substr(i + 2, 1) != ",") {
+          i++;
         }
+
+        string temp = line.substr(2, i);
+        int id = stoi(temp);
+        int j = 0;
+        while(line.substr(i + j + 3, 1) != ",") {
+          j++;
+        }
+        temp = line.substr(i + 3, j);
+        long long p1 = static_cast <long long> (stold(temp)*100000);
+        string temp2 = line.substr(j+i+4, line.size() - 1);
+        long long p2 = static_cast <long long> (stold(temp2)*100000);
+        point = {p1,p2};
+        points[id] = point;
+        graph.addVertex(id);
+      }
+      else if(line.substr(0, 1) == "E") {
+        int i = 0;
+        while(line.substr(i + 2, 1) != ",") {
+          i++;
+        }
+        string temp = line.substr(2, i);
+        int start = stoi(temp);
+        int j = 0;
+        while(line.substr(i + j + 3, 1) != ",") {
+          j++;
+        }
+        temp = line.substr(i + 3, j);
+        int end = stoi(temp);
+        long long fire = manhattan(points[start], points[end]);
+        graph.addEdge(start, end,fire);
+      }
+      else {
+        break;
+      }
     }
-    textIn.close();
-  // ifstream file(filename);
-  // string line;
-  // Point point; 
-  // if(file.is_open()) {
-  //   while(!file.eof()) {
-  //     getline(file, line);
-  //     if(line.substr(0, 1) == "V") {
-  //       int i = 1;
-  //       while(line.substr(i + 1, 1) != ",") {
-  //         i++;
-  //       }
-
-  //       string temp = line.substr(2, i - 1);
-  //       int id = stoi(temp);
-  //       int j =1;
-  //       while(line.substr(i + j + 2, 1) != ",") {
-  //         j++;
-  //       }
-  //       temp = line.substr(i + 2, j);
-
-  //       long long p1 = static_cast <long long> (stold(temp)*100000);
-  //       int x =1;
-		//     while(line.substr(x + j+i + 2, 1) != "") {
-  //         x++;
-  //       }
-
-  //       string temp2 = line.substr(j+i+3, x);
-  //       long long p2 = static_cast <long long> (stold(temp)*100000);
-  //       point = {p1,p2};
-  //       points[id] = point;
-  //       graph.addVertex(id);
-  //     }
-  //     else if(line.substr(0, 1) == "E") {
-  //       int i = 1;
-  //       while(line.substr(i + 1, 1) != ",") {
-  //         i++;
-  //       }
-  //       string temp = line.substr(2, i - 1);
-  //       int start = stoi(temp);
-  //       int j = 1;
-  //       while(line.substr(i + j + 2, 1) != ",") {
-  //         j++;
-  //       }
-  //       temp = line.substr(i + 2, j);
-  //       int end = stoi(temp);
-  //       long long fire = manhattan(points[start], points[end]);
-  //       graph.addEdge(start, end,fire);
-  //     }
-  //     else {
-  //       break;
-  //     }
-  //   }
-  //   file.close();
-  // }
+    file.close();
+  }
 }
 	
 
@@ -151,33 +113,26 @@ int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<
   return closePointId;
 }
 
-int main(int argc, char* argv[]){
+int main(){
 	WDigraph graph;
-	char map[] = "edmonton-roads-2.0.1.txt";
+	string map = "edmonton-roads-2.0.1.txt";
 	unordered_map<int,Point> points;
 	readGraph(map, graph,points);
 	long long startLatit, startLong, endLatit, endLong;
   stack<int> path;
-  ifstream inputFile;
-  ofstream outputFile;
-  inputFile.open(argv[1]);
-  outputFile.open("mysol.txt");
   string x;
-  while(inputFile >> x) {
+  while(cin >> x) {
     if(x == "R") {
-      inputFile >> startLatit >> startLong >> endLatit >> endLong;
-
+      cin >> startLatit >> startLong >> endLatit >> endLong;
       int start = convertToMapPoint(startLatit,startLong,points);
       int end = convertToMapPoint(endLatit,endLong,points);
       unordered_map<int, PIL> searchTree;
       dijkstra(graph,start,searchTree);
-      outputFile << "N ";
-      //TODO
+      cout << "N ";
       if(searchTree.find(end) == searchTree.end()){
-        outputFile<<" 0"<<endl; // if there is no path
+        cout <<" 0"<<endl; // if there is no path
       }
-      else{
-      //TODO
+      else {
         int node = end;
         while(node != start){
           path.push(node);
@@ -185,22 +140,19 @@ int main(int argc, char* argv[]){
         }
         path.push(start);
         int pathSize = path.size();
-        outputFile << pathSize<<endl;
+        cout << pathSize << endl;
         if(path.size()>1){
           for(int i=0;i<pathSize;i++){
-            inputFile >>x;     
+            cin >>x;     
             if(x=="A"){
              Point output = points[path.top()];
-             outputFile << "W "<< output.lat << " " << output.lon << endl;
              cout << "W "<< output.lat << " " << output.lon << endl;
               path.pop();
            }
          }
-         inputFile >>x;
-         outputFile<<"E"<<endl;
+         cin >> x;
+         cout << "E"<< endl;
   }
-  inputFile.close();
-  outputFile.close();
 
 
 }
