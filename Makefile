@@ -13,6 +13,5 @@ digraph.o: digraph.cpp $(header)
 	$(CC) digraph.cpp -o digraph.o $(CFLAGS)
 server.o: server.cpp $(header)
 	$(CC) server.cpp -o server.o $(CFLAGS)
-
 clean:
 	@rm -f $(PROGS) $(OBJS)
