@@ -35,41 +35,52 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
   Point point; 
   if(file.is_open()) {
     while(file.good()) {
+      // get the line
       getline(file, line);
+      // if the first character is V
       if(line.substr(0, 1) == "V") {
         int i = 0;
+        // find the location of "," and stop
         while(line.substr(i + 2, 1) != ",") {
           i++;
         }
-
+        // the id
         string temp = line.substr(2, i);
         int id = stoi(temp);
         int j = 0;
         while(line.substr(i + j + 3, 1) != ",") {
           j++;
         }
+        // the lat
         temp = line.substr(i + 3, j);
         long long p1 = static_cast <long long> (stold(temp)*100000);
+        // the lon
         string temp2 = line.substr(j+i+4, line.size() - 1);
         long long p2 = static_cast <long long> (stold(temp2)*100000);
+        // store the point
         point = {p1,p2};
+        // store the id
         points[id] = point;
         graph.addVertex(id);
       }
+      // if E, connect the id together
       else if(line.substr(0, 1) == "E") {
         int i = 0;
         while(line.substr(i + 2, 1) != ",") {
           i++;
         }
+        // first ID
         string temp = line.substr(2, i);
         int start = stoi(temp);
         int j = 0;
         while(line.substr(i + j + 3, 1) != ",") {
           j++;
         }
+        // second ID
         temp = line.substr(i + 3, j);
         int end = stoi(temp);
         long long fire = manhattan(points[start], points[end]);
+        // add the edge
         graph.addEdge(start, end,fire);
       }
       else {
