@@ -14,22 +14,26 @@ struct Point
 	long long lat;
 	long long lon;
 };
+/* Function : manhattan
+Arguements: pt1 and pt2 (the 2 points to find the manhattan distance between)
+*/
 long long manhattan(const Point& pt1, const Point& pt2){
 	//return Manhattan distance between the 2 given points;
 	long long distance = abs(pt1.lon - pt2.lon) + abs(pt1.lat-pt2.lat);
 
   return distance;
 }
+/*Read the Edmonton map data from the provided file
+  and load it into the given WDigraph object.
+  Store vertex coordinates in Point struct and map
+  each vertex to its corresponding Point struct.
+  PARAMETERS:
+  filename: name of the file describing a road network
+  graph: an instance of the weighted directed graph (WDigraph) class
+  points: a mapping between vertex identifiers and their coordinates
+  */
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
-	/*Read the Edmonton map data from the provided file
-	and load it into the given WDigraph object.
-	Store vertex coordinates in Point struct and map
-	each vertex to its corresponding Point struct.
-	PARAMETERS:
-	filename: name of the file describing a road network
-	graph: an instance of the weighted directed graph (WDigraph) class
-	points: a mapping between vertex identifiers and their coordinates
-	*/
+	
   ifstream file(filename);
   string line;
   Point point; 
@@ -91,7 +95,10 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
   }
 }
 	
-
+/* Function : convertToMapPoint
+Arguements: lattitude, longnitude, points
+Description: Find the closest waypoint to the input/ textfile point
+*/
 int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<int, Point>& points ){
   Point convertPoint = {lattitude, longnitude};
   long long closePoint;
@@ -99,21 +106,17 @@ int convertToMapPoint(long long lattitude , long long longnitude, unordered_map<
   int closePointId;
   int counter =0;
 
-  for (auto point : points){
+  for (auto point : points){ // iterate through points to find the point closest way point
     
-
-    // if(distance < closePoint){
-    //   cout<<"bitc ";
     counter ++;
     
-  // }
-    long long distance = manhattan(point.second , convertPoint);
-    if(fillClosePoint ==1){
+    long long distance = manhattan(point.second , convertPoint); // calculate manhattan distance from the waypoint to the input point
+    if(fillClosePoint ==1){ // check if first run cause need to fill the closePoint and closePointId
       closePoint = distance;
       closePointId = point.first;
       fillClosePoint = 0;
     }
-    if(closePoint > distance){
+    if(closePoint > distance){ // find the minium manhattan distance and store the id
       closePoint = distance;
       closePointId = point.first;
 
@@ -134,26 +137,26 @@ int main(){
   string x;
   while(cin >> x) {
     if(x == "R") {
-      cin >> startLatit >> startLong >> endLatit >> endLong;
-      int start = convertToMapPoint(startLatit,startLong,points);
-      int end = convertToMapPoint(endLatit,endLong,points);
-      unordered_map<int, PIL> searchTree;
-      dijkstra(graph,start,searchTree);
+      cin >> startLatit >> startLong >> endLatit >> endLong; 
+      int start = convertToMapPoint(startLatit,startLong,points); // find closest way point to start 
+      int end = convertToMapPoint(endLatit,endLong,points); // same as above line but for end
+      unordered_map<int, PIL> searchTree; // build a search tree
+      dijkstra(graph,start,searchTree); // make dijsktra graph of the possible path from the start
       cout << "N ";
-      if(searchTree.find(end) == searchTree.end()){
+      if(searchTree.find(end) == searchTree.end()){ // check for no path
         cout <<" 0"<<endl; // if there is no path
       }
       else {
-        int node = end;
-        while(node != start){
-          path.push(node);
-          node = searchTree[node].second;
+        int node = end; // traverse from the back of the search tree 
+        while(node != start){ // loop  till get to starting node and add the nodes on the way to the stack
+          path.push(node);  
+          node = searchTree[node].second;  
         }
-        path.push(start);
-        int pathSize = path.size();
+        path.push(start); // make sure to add the start node
+        int pathSize = path.size(); // store path size
         cout << pathSize << endl;
-        if(path.size()>1){
-          for(int i=0;i<pathSize;i++){
+        if(path.size()>1){  
+          for(int i=0;i<pathSize;i++){ // everytime user press A prints the next node and pops it out from stack
             cin >>x;     
             if(x=="A"){
              Point output = points[path.top()];
