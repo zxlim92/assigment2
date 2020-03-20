@@ -8,8 +8,6 @@
 #include "dijkstra.h"
 void dijkstra(const WDigraph& graph, int startVertex, 
     unordered_map<int, PIL>& searchTree) {
-    // initialize the heap
-    searchTree = {};
     // create binary heap events
     BinaryHeap<pair<int, int> ,long long> events;
     // create starting pair for vertex

@@ -1,0 +1,26 @@
+Name: Le Minh Dang,Zi Xue Lim
+CCID : mldang, zixue
+ID #: 1581106,1573849
+
+Reference: Dijsktra Pseudocode from Lecture
+
+Assignment 2 Part 1: Server
+
+Included files:
+    * dijkstra.cpp
+    * dijkstra.h
+    * Makefile
+    * README
+    * server.cpp
+
+Running Instructions:
+	Run "make" to compile all of the targets.
+    Run "make server" to compile the everything and link to server.
+    Run "make dijkstra.o" to compile the dijkstra.cpp.
+    Run "make digraph.o" to compile the digraph.cpp.
+    Run "make server.o" to compile the server.cpp.
+    Run "make clean" to delete all the compiled file.
+
+Assumption:
+	The software assumes that the edmonton-roads-2.0.txt is in the same directory with the ./server.
+    The input file must follow the convention from the Assignment manual, otherwise it will not input the commands.
